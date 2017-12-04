@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+  <title>House Price Trends</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="shortcut icon" href="images/favicon.ico">
+
+  <!-- stylesheets -->
+  <link rel="stylesheet" type="text/css" href="scss/bootstrap/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="dist/theme.min.css" />
+
+  <!-- javascript -->
+  <script src="dist/theme.min.js"></script>
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+        <style>
+      /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+     
+  
+
+.main {  
+    box-sizing: content-box;
+}
+
+
+label {
+  display: block;
+  margin-bottom: 2.5em;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.rangeslider__tooltip {
+  display: block;
+  margin-top: 2.5em;
+  font-size: 12px;
+  color: #a59eb5;
+}
+
+.rangeslider,
+input[type='range'] {
+  max-width: 400px;
+}
+
+.rangeslider__handle {
+  border-radius: 22px;
+  line-height: 42px;
+  text-align: center;
+  font-weight: bold;
+}
+.rangeslider__handle:after {
+  background: 0;
+}
+
+.rangeslider,
+.rangeslider__fill {
+  display: block;
+  border-radius: 10px;
+}
+
+.rangeslider {
+  background: #e6e5ea;
+  background-image: linear-gradient(to right, #4bc67d 30%, #f1c40f 45%, #b94a48 99%);
+  position: relative;
+}
+
+.rangeslider--horizontal {
+  height: 10px;
+  width: 100%;
+}
+
+.rangeslider--vertical {
+  width: 20px;
+  min-height: 150px;
+  max-height: 100%;
+}
+
+.rangeslider--disabled {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
+  opacity: 0.4;
+}
+
+.rangeslider__fill {
+  position: absolute;
+}
+
+.rangeslider--horizontal .rangeslider__fill {
+  top: 0;
+  height: 100%;
+}
+
+.rangeslider--vertical .rangeslider__fill {
+  bottom: 0;
+  width: 100%;
+}
+
+.rangeslider__handle {
+  background: white;
+  border: 6px solid #4bc67d;
+  cursor: pointer;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+.rangeslider__handle.js-low {
+  border-color: #4bc67d;
+}
+.rangeslider__handle.js-med {
+  border-color: #f1c40f;
+}
+.rangeslider__handle.js-high {
+  border-color: #b94a48;
+}
+
+.rangeslider__handle:after {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+
+.rangeslider--horizontal .rangeslider__handle {
+  top: -20px;
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
+}
+
+.rangeslider--vertical .rangeslider__handle {
+  left: -10px;
+  touch-action: pan-x;
+  -ms-touch-action: pan-x;
+}
+
+input[type="range"]:focus + .rangeslider .rangeslider__handle {
+  -moz-box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
+  -webkit-box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
+  box-shadow: 0 0 8px rgba(255, 0, 255, 0.9);
+}
+
+    </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+</head>
+<body>
+  <div class="navbar navbar-light navbar-expand-lg" role="banner">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="images/logo-dark.png" class="mr-2 img-fluid" />
+        HouseTrends
+      </a>
+
+      <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
+        <ul class="navbar-nav">
+          <li class="nav-item active dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              About Us
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="index.html">Home 1 (Current)</a>
+              <a class="dropdown-item" href="index2.html">Home 2 (Slider)</a>
+              <a class="dropdown-item" href="index3.html">Home 3 (Off-canvas menu)</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              Services
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="features.html">Features</a>
+              <a class="dropdown-item" href="services.html">Services</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              Pricing
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="pricing.html">Pricing charts</a>
+              <a class="dropdown-item" href="charts.html">Comparison tables</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              Blog
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="aboutus.html">About us</a>
+              <a class="dropdown-item" href="contactus.html">Contact us</a>
+              <a class="dropdown-item" href="gallery.html">Gallery</a>
+              <a class="dropdown-item" href="portfolio.html">Portfolio</a>
+              <a class="dropdown-item" href="portfolio-item.html">Portfolio Item</a>
+              <a class="dropdown-item" href="invoice.html">Invoice page</a>
+              <a class="dropdown-item" href="timeline.html">Timeline Page</a>
+              <a class="dropdown-item" href="docs.html">API Documentation</a>
+              <a class="dropdown-item" href="support.html">Support</a>
+              <a class="dropdown-item" href="support-topic.html">Support Topic</a>
+              <a class="dropdown-item" href="coming-soon.html">Coming Soon</a>
+              <a class="dropdown-item" href="status.html">Status</a>
+              <a class="dropdown-item" href="signup.html">Sign Up & Sign In</a>
+              <a class="dropdown-item" href="signup-rotate.html">Sign Up Miscellaneous</a>
+              <a class="dropdown-item" href="404.html">404 Page</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown dropdown-extend">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              Alerts
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu dropdown-extend-menu" role="menu">
+              <div class="row">
+                <div class="col-md-3">
+                  <a class="dropdown-item" href="docs/alerts.html"><i class="ion-alert-circled"></i> Alerts</a>
+                  <a class="dropdown-item" href="docs/animations.html"><i class="ion-wand"></i> Animations</a>
+                  <a class="dropdown-item" href="docs/badges.html"><i class="ion-ios-pricetag-outline"></i> Badges</a>
+                  <a class="dropdown-item" href="docs/buttons.html"><i class="ion-ios-paperplane"></i> Buttons</a>
+                  <a class="dropdown-item" href="docs/button-groups.html"><i class="ion-ios-browsers"></i> Button groups</a>
+                  <a class="dropdown-item" href="docs/cards.html"><i class="ion-ios-albums-outline"></i> Cards</a>
+                </div>
+                <div class="col-md-3">
+                  <a class="dropdown-item" href="docs/carousel.html"><i class="ion-android-arrow-dropright-circle"></i> Carousel</a>
+                  <a class="dropdown-item" href="docs/accordion.html"><i class="ion-navicon"></i> Accordion</a>
+                  <a class="dropdown-item" href="docs/cta.html"><i class="ion-funnel"></i> Call to action</a>
+                  <a class="dropdown-item" href="docs/dropdowns.html"><i class="ion-arrow-down-b"></i> Dropdowns</a>
+                  <a class="dropdown-item" href="docs/forms.html"><i class="ion-clipboard"></i> Forms</a>
+                  <a class="dropdown-item" href="docs/input-groups.html"><i class="ion-toggle"></i> Input groups</a>
+                </div>
+                <div class="col-md-3">
+                  <a class="dropdown-item" href="docs/icons.html"><i class="ion-social-octocat"></i> Icons</a>
+                  <a class="dropdown-item" href="docs/list-groups.html"><i class="ion-ios-list-outline"></i> List groups</a>
+                  <a class="dropdown-item" href="docs/modals.html"><i class="ion-monitor"></i> Modals</a>
+                  <a class="dropdown-item" href="docs/navs.html"><i class="ion-navigate"></i> Navs</a>
+                  <a class="dropdown-item" href="docs/navbars.html"><i class="ion-navicon-round"></i> Navbars</a>
+                  <a class="dropdown-item" href="docs/plugins.html"><i class="ion-compose"></i> New plugins</a>
+                </div>
+                <div class="col-md-3">
+                  <a class="dropdown-item" href="docs/progress.html"><i class="ion-stats-bars d-inline-block" style="transform: rotate(90deg);"></i> Progress bars</a>
+                  <a class="dropdown-item" href="docs/stats-cards.html"><i class="ion-arrow-graph-up-right"></i> Stats cards</a>
+                  <a class="dropdown-item" href="docs/tables.html"><i class="ion-grid"></i> Tables</a>
+                  <a class="dropdown-item" href="docs/typography.html"><i class="ion-paintbrush"></i> Typography</a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+              Contact us
+              <i class="ion-chevron-down"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="blog.html">Blog</a>
+              <a class="dropdown-item" href="blog-cols.html">Blog cols</a>
+              <a class="dropdown-item" href="blog-timeline.html">Blog timeline</a>
+              <a class="dropdown-item" href="blogpost.html">Blog Post</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link--rounded" href="signup.html">Sign up</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-hero" id="slider">
+    <a class="slide-nav prev" href="#">Prev</a>
+    <a class="slide-nav next" href="#">Next</a>
+    <nav>
+      <a class="active" href="#"></a>
+      <a href="#"></a>
+      <a href="#"></a>
+    </nav>
+    <div class="slides">
+      <div class="slide first active">
+        <div class="bg"></div>
+        <div class="container customFadeInUp">
+          <h1 class="hero-text">Get the best technology videos online for free</h1>
+          <p class="sub-text">
+            Using simple HTML markup, get a complete existing website with great design up and running in no time.
+          </p>
+          <div class="video-wrapper">
+            <div class="video">
+              <img src="images/player.png" id="demo-player" alt="videoplayer" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide second">
+        <div class="bg"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-6 info">
+              <h1 class="hero-text">
+                Take control of your business anywhere
+              </h1>
+              <p>
+                React is the best way to get a great design out of the box with lots of options for customization.
+              </p>
+              <div class="cta">
+                <a href="features.html" class="button-outline">
+                  TRY IT FREE
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+              </div>
+            </div>
+            <div class="col-sm-6 hidden-xs mobiles">
+              <img src="images/devices3.png" class="img-fluid customFadeInUp" alt="devices" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide third">
+        <div class="bg"></div>
+        <div class="container customFadeInDown">
+          <h1 class="hero-text">
+            Is it good time to buy the house ...
+          </h1>
+          <p class="sub-text">
+            We help to make decision when to buy the property on Dutch market by tracking the main indicators and trends.
+          </p>
+          <div class="cta">
+            <a href="features.html" class="button-outline">See the tour</a>
+            <a href="signup.html" class="button">Subscribe for report</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="video-modal">
+      <div class="wrap">
+        <iframe src="https://player.vimeo.com/video/22439234" width="620" height="350" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+<div class="features-section">
+    <div class="container">
+      <div class="header text-center">
+        <h2>Indicators on Dutch housing market that reflect current situation and predice future trends</h2>
+      </div>
+        <div class="features-section">
+  <!-- paste -->
+    <div class="main">
+ <p class="mt-3">Current situation:</p>
+ 
+  <input
+      type="range"
+      name="participants"
+      min="5"
+      max="51"
+      value="20"
+  >
+  <span class="rangeslider__tooltip" id ="range-tooltip"></span>
+
+  <p class="mt-3">Next month:</p>
+  <input
+      type="range"
+      name="participants2"
+      min="5"
+      max="51"
+      value="30"
+  >
+  <span class="rangeslider__tooltip" id ="range-tooltip23"></span>
+
+  <p class="mt-3">Next year:</p>
+  <input
+      type="range"
+      name="participants3"
+      min="5"
+      max="51"
+      value="40"
+  >
+  <span class="rangeslider__tooltip" id ="range-tooltip3"></span>
+
+</div>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src='https://andreruffert.github.io/rangeslider.js/assets/rangeslider.js/dist/rangeslider.min.js'></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js'></script>
+
+    <script  src="js/index.js"></script>
+  </div>
+<!-- paste -->
+<!-- comment
+      <div class="header text-center">
+        <h2>Need an easy way to customize your site?</h2>
+        <p class="mt-3">React is perfect for novice developers and experts alike.</p>
+      </div>
+      <div class="feature">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info">
+              <h4 class="mt-lg-5">You don't need to have great technical experience to use your product.</h4>
+              <p>
+                Whether you want to fill this paragraph with some text like I'm doing right now, this place
+                is perfect to describe some features or anything you want - React has a complete solution for you.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 text-center">
+            <img src="images/feature4.png" class="img-fluid" alt="feature1" />
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="feature">
+        <div class="row">
+          <div class="col-md-6 order-md-2">
+            <div class="info">
+              <h4 class="mt-lg-4">A fully featured well design template that works.</h4>
+              <p>
+                You have complete control over the look & feel of your website, we offer the best quality so you
+                take your site up and running in no time.
+              </p>
+              <p>
+                Write some text here to explain the features of your site or application, it
+                has lots of uses.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 order-md-1 text-center">
+            <img src="images/feature2.png" class="img-fluid" alt="feature2" />
+          </div>
+        </div>
+      </div>  -->
+    </div>
+ </div> 
+
+  <div class="pricing-comparison-section">
+    <div class="container">
+      <div class="divider"></div>
+
+      <div class="main-header">
+        <h3>Indicators</h3>
+        <p>
+          When you need to compare your plans or competitors
+        </p>
+      </div>
+
+      <div class="chart clearfix d-flex align-items-stretch">
+        <div class="features-col">
+          <div class="header">                
+            Indicator name
+          </div>
+          <div class="spec">
+            <span class="icon"> <img src="images/plus.gif" class="check" /></span>
+          
+            Unemployment rate
+          </div>
+          <div class="spec">
+            <span class="icon"> <img src="images/plus.gif" class="check" /></span>
+            Gross domestic product
+          </div>
+          <div class="spec">
+            <span class="icon"> <img src="images/plus.gif" class="check" /></span>
+            Inflation rate
+          </div>
+          <div class="spec">
+            <span class="icon"> <img src="images/minus.gif" class="check" /></span>
+            Customer confidence
+          </div>
+          <div class="spec">
+            <span class="icon"> <img src="images/minus.gif" class="check" /></span>
+            Goverment dept
+          </div>
+          
+        </div>
+        <div class="plan-col d-flex flex-column">
+          <div class="header">
+            Now
+            <div class="price">
+              November 2017
+            </div>
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+
+         
+        </div>
+        <div class="plan-col d-flex flex-column">
+          <div class="header">
+            Now + Quarter
+            <div class="price">
+              February 2018
+            </div>
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+
+          
+        </div>
+        <div class="plan-col d-flex flex-column">
+          <div class="header">
+            Now + Year
+            <div class="price">
+              November 2018
+            </div>
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+          <div class="spec">
+            <img src="images/checkmark.png" class="check" alt="checkmark" />
+          </div>
+         
+
+          
+        </div>
+      </div>
+      
+      <div class="message">
+        All of our plans come with a 30 day trial with no credit card required, we also offer a <a href="signup.html">free plan</a>.
+      </div>
+
+     
+  </div>
+
+  <div class="features-hover-section">
+    <div class="container">
+      <div class="images">
+        <img src="images/services5.png" class="img-fluid active" alt="services1" />
+        <img src="images/services6.png" class="img-fluid" alt="services2" />
+        <img src="images/services7.png" class="img-fluid" alt="services3" />
+      </div>
+      <div class="features">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="feature active">
+              <strong>Your own dashboard</strong>
+              <p>
+                You can work with international customers right out of the box while you can keep staying in your country.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature">
+              <strong>Showcase your landing page</strong>
+              <p>
+                You can work with international customers right out of the box while you can keep staying in your country.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature">
+              <strong>Offer pricing plans</strong>
+              <p>
+                You can work with international customers right out of the box while you can keep staying in your country.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="cta-section">
+    <p>
+      Subscribe for free for newest reports every month!
+    </p>
+    <a href="signup.html">
+      Subscribe
+    </a>
+  </div>
+
+  <div class="clients-section">
+    <div class="container">
+      <h3>Our Customers</h3>
+      <p>
+        These are some of our customers who have helped us by using our product.
+      </p>
+      <div class="logos">
+        <img src="images/logos/google.png">
+        <img src="images/logos/facebook.png">
+        <img src="images/logos/apple.png">
+        <img src="images/logos/stripe.png">
+        <img src="images/logos/yahoo.png">
+      </div>
+    </div>
+  </div>
+
+  <div class="footer footer--light">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 menu">
+          <h3>Overview</h3>
+          <ul>
+            <li>
+              <a href="features.html">Features</a>
+            </li>
+            <li>
+              <a href="services.html">Services</a>
+            </li>
+            <li>
+              <a href="pricing.html">Pricing</a>
+            </li>
+            <li>
+              <a href="support.html">Support</a>
+            </li>
+            <li>
+              <a href="blog.html">Blog</a>
+            </li>
+            <li>
+              <a href="blog.html">Coming soon</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-3 menu">
+          <h3>Menu</h3>
+          <ul>
+            <li>
+              <a href="features.html">About us</a>
+            </li>
+            <li>
+              <a href="services.html">Contact us</a>
+            </li>
+            <li>
+              <a href="aboutus.html">Jobs</a>
+              <a href="aboutus.html" class="hiring">
+                We're hiring!
+              </a>
+            </li>
+            <li>
+              <a href="support.html">Portfolio</a>
+            </li>
+            <li>
+              <a href="blog.html">Status</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-2 menu">
+          <h3>Social</h3>
+          <ul>
+            <li>
+              <a href="features.html">Youtube</a>
+            </li>
+            <li>
+              <a href="services.html">Facebook</a>
+            </li>
+            <li>
+              <a href="pricing.html">Twitter</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4 newsletter">
+          <div class="signup clearfix">
+            <p>
+              Sign up for the newsletter and we'll inform you of updates, offers and more.
+            </p>
+            <form>
+              <input type="text" name="email" class="form-control" placeholder="Your email address" />
+              <input type="submit" value="Sign up" />
+            </form>
+          </div>
+          <a href="#">
+            <img src="images/social/social-tw.png" alt="twitter" />
+          </a>
+          <a href="#">
+            <img src="images/social/social-dbl.png" alt="dribbble" />
+          </a>
+        </div>
+      </div>
+      <div class="credits">
+        <p>Copyright © 2019. React</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    $(function () {
+      var $navDots = $("#slider nav a")
+      var $next = $(".slide-nav.next");
+      var $prev = $(".slide-nav.prev");
+      var $slides = $("#slider .slides .slide");
+      var actualIndex = 0;
+      var swiping = false;
+      var interval;
+
+      $navDots.click(function (e) {
+        e.preventDefault();
+        if (swiping) { return; }
+        swiping = true;
+
+        actualIndex = $navDots.index(this);
+        updateSlides(actualIndex);
+      });
+
+      $next.click(function (e) {
+        e.preventDefault();
+        if (swiping) { return; }
+        swiping = true;
+
+        clearInterval(interval);
+        interval = null;
+
+        actualIndex++;
+        if (actualIndex >= $slides.length) {
+          actualIndex = 0;
+        }
+
+        updateSlides(actualIndex);
+      });
+
+      $prev.click(function (e) {
+        e.preventDefault();
+        if (swiping) { return; }
+        swiping = true;
+
+        clearInterval(interval);
+        interval = null;
+
+        actualIndex--;
+        if (actualIndex < 0) {
+          actualIndex = $slides.length - 1;
+        }
+
+        updateSlides(actualIndex);
+      });
+
+      function updateSlides(index) {
+        // update nav dots
+        $navDots.removeClass("active");
+        $navDots.eq(index).addClass("active");
+
+        // update slides
+        var $activeSlide = $("#slider .slide.active");
+        var $nextSlide = $slides.eq(index);
+
+        $activeSlide.fadeOut();
+        $nextSlide.addClass("next").fadeIn();
+        
+        setTimeout(function () {
+          $slides.removeClass("next").removeClass("active");
+          $nextSlide.addClass("active");
+          $activeSlide.removeAttr('style');
+          swiping = false;
+        }, 1000);
+      }
+
+      interval = setInterval(function () {
+        if (swiping) { return; }
+        swiping = true;
+
+        actualIndex++;
+        if (actualIndex >= $slides.length) {
+          actualIndex = 0;
+        }
+
+        updateSlides(actualIndex);
+      }, 5000);
+
+      // demo player
+      var $videoModal = $(".video-modal");
+      $("#demo-player").click(function () {
+        $videoModal.toggleClass("active");
+        clearInterval(interval);
+        interval = null;
+      });
+      $videoModal.click(function () {
+        $videoModal.removeClass("active");
+        setTimeout(function () {
+          $videoModal.find(".wrap").html('<iframe src="https://player.vimeo.com/video/22439234" width="620" height="350" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>');
+        }, 1000);
+      })
+      $videoModal.find(".wrap").click(function (e) {
+        e.stopPropagation();
+      });
+    });
+  </script>
+</body>
+</html>
