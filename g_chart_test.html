@@ -1,0 +1,149 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+    <script type="text/javascript">
+        var data;
+        var arrayData;
+
+        google.charts.load('current', {'packages':['corechart', 'bar']});
+
+        $.get("https://raw.githubusercontent.com/KZagranovskyi/HT2/master/BalanceChartData.csv%20-%20Sheet1.csv", function (csvString) {
+            arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+
+
+        });
+
+        google.charts.setOnLoadCallback(drawStuff);
+
+        function calculateColSum(selectedYear ,data, index) {
+            var sum = 0;
+            for (var i = 1; i <= selectedYear; i++) {
+                sum = sum +data[i][index]
+
+            }
+
+            return Math.round(sum);
+        }
+
+        function createTable(tableData) {
+            var table = document.createElement('table');
+            table.style.width= "100%";
+            var tableBody = document.createElement('tbody');
+
+            tableData.forEach(function(rowData) {
+                var row = document.createElement('tr');
+
+                rowData.forEach(function(cellData) {
+
+                    var cell = document.createElement('td');
+                    cell.appendChild(document.createTextNode(cellData));
+                    row.appendChild(cell);
+                });
+
+                tableBody.appendChild(row);
+            });
+
+            table.appendChild(tableBody);
+
+            $('#detailed-table').html(table);
+        }
+
+        function drawStuff() {
+
+            var chartDiv = document.getElementById('chart_div');
+
+            data = new google.visualization.arrayToDataTable(arrayData);
+
+
+            var materialOptions = {
+                width: 550,
+                isStacked : true,
+                chart: {
+                    title: 'Mortgage balance',
+                    subtitle: 'shows the profits and losses by each year'
+                },
+                series: {
+                      2 :{ color: '#7ab87b'},
+                    0 :{ color: '#b8777d'},
+                    1 :{ color: '#e13839'}
+
+//                    1: { axis: ['BankInterest','ServicePurchaseCosts']} // Bind series 0 to an axis named 'distance'.
+//                    2: { axis: 'ServicePurchaseCosts' } ,// Bind series 1 to an axis named 'brightness'.
+//                    3: { axis: 'PricePnL' }
+                },
+                axes: {
+                    y: {
+                        distance: {label: 'parsecs'}, // Left y-axis.
+                        brightness: {side: 'right', label: 'apparent magnitude'} // Right y-axis.
+                    }
+                },
+                bar: {
+                    groupWidth : 14
+                },
+                colors: ['red','green','blue'],
+                bars: 'horizontal'
+
+            };
+
+
+
+            function drawMaterialChart() {
+                var materialChart = new google.charts.Bar(chartDiv);
+                materialChart.draw(data, google.charts.Bar.convertOptions(materialOptions));
+
+                google.visualization.events.addListener(materialChart, 'select', selectHandler);
+
+                function selectHandler(e) {
+                    var selection = materialChart.getSelection();
+                    var selectedYear = selection[0].row + 1;
+                    var totalInterestExpenses = calculateColSum(selectedYear, arrayData, 1);
+                    var housePriceProfit = calculateColSum(selectedYear, arrayData, 3);
+                    var serviceCosts = calculateColSum(selectedYear, arrayData, 2);
+                    var totalBalance = totalInterestExpenses + housePriceProfit + housePriceProfit;
+
+
+                    $('#text #selected-description').html('Here are the details about total property ownership for first ' + selectedYear + ' years: ');
+                    $('#text #selected-int-rate').html('Mortgage interest: ' + totalInterestExpenses + "&euro;");
+                    $('#text #selected-service-costs').html('Service costs: ' + serviceCosts + "&euro;");
+                    $('#text #selected-house-price').html('House price profit: ' + housePriceProfit + "&euro;");
+                    $('#text #selected-total').html('Total balance: ' + totalBalance + "&euro;");
+                }
+
+//                button.innerText = 'Change to Classic';
+//                button.onclick = drawClassicChart;
+            }
+
+//            function drawClassicChart() {
+//                var classicChart = new google.visualization.ColumnChart(chartDiv);
+//                classicChart.draw(data, classicOptions);
+//                button.innerText = 'Change to Material';
+//                button.onclick = drawMaterialChart;
+//            }
+
+            drawMaterialChart();
+            createTable(arrayData);
+        }
+    </script>
+</head>
+<body>
+<br><br><br><br>
+<div>
+    <div id="chart_div" style="width: 600px; height: 600px; float:left; margin-left: 30px;"></div>
+    <div id="text" style="width:50%; height: 600px; float:right; font-family: Roboto; margin-left: 50px;">
+        <p id="selected-description">Select one of the years on the chart</p>
+        <p id="selected-int-rate"></p>
+        <p id="selected-service-costs"></p>
+        <p id="selected-house-price"></p>
+        <p id="selected-total"></p>
+    </div>
+</div>
+<footer>
+<div style="font-family: Roboto; margin-left: 30px; margin-top: 60px; text-align:center">
+    <p>Detailed report per year:</p>
+    <p id="detailed-table"></p>
+</div>
+</footer>
+</body>
+</html>
