@@ -35,6 +35,63 @@
         var inp_price = 250000;
         var inp_price_growth_rate = 1.035;
         var data;
+        var materialChart;
+
+        var materialOptions = {
+            width: 700,
+            height: 600,
+            isStacked: true,
+            chart: {
+                title: 'Mortgage balance',
+                subtitle: 'shows the profits and losses by each year'
+            },
+            series: {
+                2: {color: '#639964'},
+                0: {color: '#ed574b'},
+                1: {color: '#c93510'},
+                3: {color: '#e24f5b'},
+                4: {color: '#46a067'},
+                5: {color: '#c44b58'},
+            },
+            axes: {
+                y: {
+                    distance: {label: 'parsecs'}, // Left y-axis.
+                    brightness: {side: 'right', label: 'apparent magnitude'} // Right y-axis.
+                },
+                x: {
+                    0: {side: 'bottom', label: 'Profits and Loss'} // Top x-axis.
+                }
+            },
+            bar: {
+                groupWidth: 14
+            },
+            colors: ['red', 'green', 'blue'],
+            bars: 'horizontal'
+        };
+
+        var compareChartOptions = {
+            height: 800,
+            title: 'Rent vs Ownership balance comparison',
+            orientation: 'vertical',
+            curveType: 'function',
+            legend: {
+                position: 'bottom'
+            },
+            hAxis: {
+
+                title: 'Profits and Loss',
+                format: 'currency'
+            },
+            vAxis: {
+                baseline: 0,
+                title: 'Years',
+                direction: -1,
+                gridlines: {
+                    count : 10
+                }
+            }
+        };
+
         var arrayData = calculateAnnuityPayments(inp_price,inp_rate,inp_years, inp_price_growth_rate,0,0,0);
         google.charts.load('current', {'packages':['corechart', 'bar']});
         $.get("https://raw.githubusercontent.com/KZagranovskyi/HT2/master/BalanceChartData.csv%20-%20Sheet1.csv", function (csvString) {
@@ -48,7 +105,7 @@
         function calculateColSum(selectedYear ,data, index) {
             var sum = 0;
             for (var i = 1; i <= selectedYear; i++) {
-                sum = sum +data[i][index]
+                sum = sum + data[i][index];
             }
             return Math.round(sum);
         }
@@ -95,67 +152,67 @@
             table.appendChild(tableBody);
             $('#detailed-table').html(table);
         }
-        function drawStuff() {
-            var chartDiv = document.getElementById('chart_div');
-            data = new google.visualization.arrayToDataTable(arrayData);
-            var materialOptions = {
-                width: 700,
-                height: 600,
-                isStacked : true,
-                chart: {
-                    title: 'Mortgage balance',
-                    subtitle: 'shows the profits and losses by each year'
-                },
-                series: {
-                    2 :{ color: '#639964'},
-                    0 :{ color: '#ed574b'},
-                    1 :{ color: '#c93510'},
-                    3 :{ color: '#e24f5b'},
-                    4 :{ color: '#46a067'},
-                    5 :{ color: '#c44b58'},
-//                    1: { axis: ['BankInterest','ServicePurchaseCosts']} // Bind series 0 to an axis named 'distance'.
-//                    2: { axis: 'ServicePurchaseCosts' } ,// Bind series 1 to an axis named 'brightness'.
-//                    3: { axis: 'PricePnL' }
-                },
-                axes: {
-                    y: {
-                        distance: {label: 'parsecs'}, // Left y-axis.
-                        brightness: {side: 'right', label: 'apparent magnitude'} // Right y-axis.
-                    },
-                    x: {
-                      0: { side: 'bottom', label: 'Profits and Loss'} // Top x-axis.
-                    }
-                },
-                bar: {
-                    groupWidth : 14
-                },
-                colors: ['red','green','blue'],
-                bars: 'horizontal'
-            };
-            function drawMaterialChart() {
-                var materialChart = new google.charts.Bar(chartDiv);
-                materialChart.draw(data, google.charts.Bar.convertOptions(materialOptions));
-                google.visualization.events.addListener(materialChart, 'select', selectHandler);
-                function selectHandler(e) {
-                    var selection = materialChart.getSelection();
-                    if (selection.length !==  0) {
-                        var selectedYear = selection[0].row + 1;
-                        var totalInterestExpenses = calculateColSum(selectedYear, arrayData, 1);
-                        var housePriceProfit = calculateColSum(selectedYear, arrayData, 3);
-                        var taxes = calculateColSum(selectedYear, arrayData, 2);
-                        var buyingCosts = calculateColSum(selectedYear, arrayData, 4);
-                        var expectedProfits = calculateColSum(selectedYear, arrayData, 5);
-                        var expectedExpenses = calculateColSum(selectedYear, arrayData, 6);
-                        var totalBalance = totalInterestExpenses + housePriceProfit + taxes + buyingCosts + expectedProfits + expectedExpenses;
-                        $('#text #selected-description').html('Here are the details about total property ownership for first ' + selectedYear + ' years: ');
-                        $('#text #selected-int-rate').html('Mortgage interest: ' + totalInterestExpenses + "&euro;");
-                        $('#text #selected-service-costs').html('Property tax: ' + taxes + "&euro;");
-                        $('#text #selected-house-price').html('House price profit: ' + housePriceProfit + "&euro;");
-                        $('#text #selected-total').html('Total balance: ' + totalBalance + "&euro;");
-                    }
-                }
 
+        function selectHandler() {
+            var selection = materialChart.getSelection();
+            if (selection.length !== 0) {
+                var selectedYear = selection[0].row +1;
+                var totalInterestExpenses = calculateColSum(selectedYear, arrayData, 1);
+                var housePriceProfit = calculateColSum(selectedYear, arrayData, 3);
+                var taxes = calculateColSum(selectedYear, arrayData, 2);
+                var buyingCosts = calculateColSum(selectedYear, arrayData, 4);
+                var expectedProfits = calculateColSum(selectedYear, arrayData, 5);
+                var expectedExpenses = calculateColSum(selectedYear, arrayData, 6);
+                var totalBalance = totalInterestExpenses + housePriceProfit + taxes + buyingCosts + expectedProfits + expectedExpenses;
+                $('#text #selected-description').html('Here are the details about total property ownership for first ' + selectedYear + ' years: ');
+                $('#text #selected-int-rate').html('Mortgage interest: ' + totalInterestExpenses + "&euro;");
+                $('#text #selected-service-costs').html('Property tax: ' + taxes + "&euro;");
+                $('#text #selected-house-price').html('House price profit: ' + housePriceProfit + "&euro;");
+                $('#text #selected-total').html('Total balance: ' + totalBalance + "&euro;");
             }
+        }
+
+        function drawMaterialChart() {
+            var chartDiv = document.getElementById('chart_div');
+            materialChart = new google.charts.Bar(chartDiv);
+            materialChart.draw(data, google.charts.Bar.convertOptions(materialOptions));
+            google.visualization.events.addListener(materialChart, 'select', selectHandler);
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            var compData = new google.visualization.arrayToDataTable(prepareComparisonData(data));
+            chart.draw(compData, compareChartOptions);
+        }
+
+        function prepareComparisonData(data){
+            var payments = [];
+            var header = ["Year","Ownership Balance","Rent Balance"];
+            payments.push(header);
+            payments.push([0, calculateColSum(2, arrayData, 4), 0]);
+
+            var rentCosts = 0;
+            var curYearRent = 11000;
+            for (var year = 1; year < 30; year++) {
+                var totalInterestExpenses = calculateColSum(year, arrayData, 1);
+                var housePriceProfit = calculateColSum(year, arrayData, 3);
+                var taxes = calculateColSum(year, arrayData, 2);
+                var buyingCosts = calculateColSum(year, arrayData, 4);
+                var expectedProfits = calculateColSum(year, arrayData, 5);
+                var expectedExpenses = calculateColSum(year, arrayData, 6);
+                var totalBalance = totalInterestExpenses + housePriceProfit + taxes + buyingCosts + expectedProfits + expectedExpenses;
+
+
+                curYearRent = curYearRent * 1.01;
+                rentCosts = rentCosts - curYearRent;
+                var payment = [year ,totalBalance, rentCosts ];
+
+                payments.push(payment);
+            }
+            return payments;
+        }
+
+        function drawStuff() {
+
+            data = new google.visualization.arrayToDataTable(arrayData);
 
             drawMaterialChart();
             createTable(arrayData);
@@ -208,7 +265,9 @@
         <p id="selected-total"></p>
     </div>
 </div>
-
+<div>
+    <div id="curve_chart" style="width: 800px; height: 800px; padding-top: 700px;"></div>
+</div>
 
 <div style="width: 100%; font-family: Roboto; margin-left: 30px; padding-top: 60px; text-align:center">
     <div id="detailed-table"></div>
