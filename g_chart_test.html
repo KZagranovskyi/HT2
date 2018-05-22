@@ -28,15 +28,32 @@
         div {
             border-radius: 5px;
         }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        tr:hover {background-color: #f5f5f5;}
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: #f2fff3;
+        }
+
     </style>
     <script type="text/javascript">
+        var header = ["Year","Bank Interest","Property tax", "Property Price Growth", 'Buying costs', 'Expected Profits', 'Expected Expenses'];
         var inp_years = 30;
         var inp_rate = 0.02;
         var inp_price = 250000;
         var inp_price_growth_rate = 1.035;
         var data;
         var materialChart;
-
         var materialOptions = {
             width: 700,
             height: 600,
@@ -68,7 +85,6 @@
             colors: ['red', 'green', 'blue'],
             bars: 'horizontal'
         };
-
         var compareChartOptions = {
             height: 800,
             title: 'Rent vs Ownership balance comparison',
@@ -78,7 +94,6 @@
                 position: 'bottom'
             },
             hAxis: {
-
                 title: 'Profits and Loss',
                 format: 'currency'
             },
@@ -91,7 +106,6 @@
                 }
             }
         };
-
         var arrayData = calculateAnnuityPayments(inp_price,inp_rate,inp_years, inp_price_growth_rate,0,0,0);
         google.charts.load('current', {'packages':['corechart', 'bar']});
         $.get("https://raw.githubusercontent.com/KZagranovskyi/HT2/master/BalanceChartData.csv%20-%20Sheet1.csv", function (csvString) {
@@ -111,7 +125,6 @@
         }
         function calculateAnnuityPayments(price , rate, years, growthRate, downpayment, expectedProfits, expectedExpenses) {
             var payments = [];
-            var header = ["Year","Bank Interest","Property tax", "Property Price Growth", 'Buying costs', 'Expected Profits', 'Expected Expenses'];
             payments.push(header);
             var monthlyRate = rate / 12;
             var months = years * 12;
@@ -130,7 +143,7 @@
                     yearInterest = yearInterest + monthInterest;
                     debt = debt - (monthlyPayment - monthInterest);
                 }
-                var payment = [year + 1, Math.round(-yearInterest), taxes, Math.round(priceGrowth), -buyingCosts, expectedProfits, -expectedExpenses ];
+                var payment = [year + 1, Math.round(-yearInterest), Math.round(taxes), Math.round(priceGrowth), -buyingCosts, expectedProfits, -expectedExpenses ];
                 buyingCosts = 0; // reset value as it is used once
                 payments.push(payment);
             }
@@ -138,13 +151,28 @@
         }
         function createTable(tableData) {
             var table = document.createElement('table');
-            table.style.width= "100%";
+            table.style.width= "90%";
             var tableBody = document.createElement('tbody');
-            tableData.forEach(function(rowData) {
+
+            var row = document.createElement('tr');
+            tableData[0].forEach(function(cellData) {
+                var cell = document.createElement('th');
+                cell.appendChild(document.createTextNode(cellData));
+                row.appendChild(cell);
+            });
+            tableBody.appendChild(row);
+
+
+            tableData.filter(d => d[0] != "Year").forEach(function(rowData) {
                 var row = document.createElement('tr');
-                rowData.forEach(function(cellData) {
+                rowData.forEach(function(cellData, index) {
+                    var value = cellData;
+                    if (index > 0) {
+                        value = "\u20ac " + value;
+                    }
+
                     var cell = document.createElement('td');
-                    cell.appendChild(document.createTextNode(cellData));
+                    cell.appendChild(document.createTextNode(value));
                     row.appendChild(cell);
                 });
                 tableBody.appendChild(row);
@@ -152,7 +180,6 @@
             table.appendChild(tableBody);
             $('#detailed-table').html(table);
         }
-
         function selectHandler() {
             var selection = materialChart.getSelection();
             if (selection.length !== 0) {
@@ -171,24 +198,20 @@
                 $('#text #selected-total').html('Total balance: ' + totalBalance + "&euro;");
             }
         }
-
         function drawMaterialChart() {
             var chartDiv = document.getElementById('chart_div');
             materialChart = new google.charts.Bar(chartDiv);
             materialChart.draw(data, google.charts.Bar.convertOptions(materialOptions));
             google.visualization.events.addListener(materialChart, 'select', selectHandler);
-
             var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
             var compData = new google.visualization.arrayToDataTable(prepareComparisonData(data));
             chart.draw(compData, compareChartOptions);
         }
-
         function prepareComparisonData(data){
             var payments = [];
             var header = ["Year","Ownership Balance","Rent Balance"];
             payments.push(header);
             payments.push([0, calculateColSum(2, arrayData, 4), 0]);
-
             var rentCosts = 0;
             var curYearRent = 11000;
             for (var year = 1; year < 30; year++) {
@@ -199,33 +222,26 @@
                 var expectedProfits = calculateColSum(year, arrayData, 5);
                 var expectedExpenses = calculateColSum(year, arrayData, 6);
                 var totalBalance = totalInterestExpenses + housePriceProfit + taxes + buyingCosts + expectedProfits + expectedExpenses;
-
-
                 curYearRent = curYearRent * 1.01;
                 rentCosts = rentCosts - curYearRent;
                 var payment = [year ,totalBalance, rentCosts ];
-
                 payments.push(payment);
             }
             return payments;
         }
-
         function drawStuff() {
-
             data = new google.visualization.arrayToDataTable(arrayData);
-
             drawMaterialChart();
             createTable(arrayData);
             $('#contactForm').on('submit', function () {
                 var price = $('#price').val();
                 var rate = $('#rate').val() / 100;
                 var term = $('#term').val();
-
                 // optional
-                 var growthRate = 1 + $('#growthRate').val() / 100;
-                 var downpayment = $('#downpayment').val();
-                 var expectedExpenses = parseInt($('#expectedExpenses').val());
-                 var expectedProfits = parseInt($('#expectedProfits').val());
+                var growthRate = 1 + $('#growthRate').val() / 100;
+                var downpayment = $('#downpayment').val();
+                var expectedExpenses = parseInt($('#expectedExpenses').val());
+                var expectedProfits = parseInt($('#expectedProfits').val());
                 arrayData = calculateAnnuityPayments(price,rate,term, growthRate, downpayment, expectedProfits, expectedExpenses);
                 drawStuff();
                 return false;
